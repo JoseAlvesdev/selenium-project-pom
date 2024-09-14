@@ -1,0 +1,86 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from time import sleep
+
+driver = webdriver.Chrome()
+driver.implicitly_wait(5)
+driver.maximize_window()
+driver.get('https://www.saucedemo.com/v1/')
+
+# Fazendo login
+driver.find_element(By.ID, 'user-name').send_keys('standard_user')
+driver.find_element(By.ID, 'password').send_keys('secret_sauce')
+driver.find_element(By.ID, 'login-button').click()
+
+# Adicionando produto no carrinho
+driver.find_element(By.XPATH, '//div[@class="inventory_item_name" and text()="Sauce Labs Backpack"]').click()
+driver.find_element(By.XPATH, '//button[text()="ADD TO CART"]').click()
+
+driver.find_element(
+    By.XPATH,
+    '//a[@href="./cart.html"] | //div[@id="shopping_cart_container"]/a[contains(@class, "shopping_cart_link")]'
+).click()
+
+# Verificando produto no carrinho
+assert driver.find_element(
+    By.XPATH, '//div[@class="inventory_item_name" and text()="Sauce Labs Backpack"]'
+).is_displayed()
+
+# Indo pro checkout
+driver.find_element(By.XPATH, '//a[@href="./checkout-step-one.html"]').click()
+
+# Preenchendo as informações
+driver.find_element(By.ID, 'first-name').send_keys('Fulano')
+driver.find_element(By.ID, 'last-name').send_keys('Beutrano')
+driver.find_element(By.ID, 'postal-code').send_keys('111111-222')
+
+# Indo pra confirmação da compra
+driver.find_element(By.XPATH, '//input[@type="submit" and @value="CONTINUE"]').click()
+
+# Finalizando a compra
+driver.find_element(By.XPATH, '//a[@href="./checkout-complete.html"]').click()
+
+# Verifcando se a compra foi feita
+assert driver.find_element(
+    By.XPATH, '//h2[@class="complete-header" and text()="THANK YOU FOR YOUR ORDER"]'
+).is_displayed()
+
+# Retornando ao menu principal
+driver.find_element(By.XPATH, '//div[@class="bm-burger-button"]/button[text()="Open Menu"]').click()
+
+
+# Voltando para o inicio
+assert driver.find_element(By.XPATH, '//div[@class="bm-menu"]').is_displayed()
+
+driver.find_element(By.ID, 'inventory_sidebar_link').click()
+
+# Adicionando mais dois produtos ao carrinho
+products = list(driver.find_elements(By.XPATH, '//button[@class and text()="ADD TO CART"]'))
+
+products[1].click()
+products[2].click()
+
+# Abrindo o carrinho
+driver.find_element(
+    By.XPATH,
+    '//a[@href="./cart.html"] | //div[@id="shopping_cart_container"]/a[contains(@class, "shopping_cart_link")]'
+).click()
+
+# Indo pro checkout
+driver.find_element(By.XPATH, '//a[@href="./checkout-step-one.html"]').click()
+
+# Preenchendo as informações
+driver.find_element(By.ID, 'first-name').send_keys('Fulano')
+driver.find_element(By.ID, 'last-name').send_keys('Beutrano')
+driver.find_element(By.ID, 'postal-code').send_keys('111111-222')
+
+# Indo pra confirmação da compra
+driver.find_element(By.XPATH, '//input[@type="submit" and @value="CONTINUE"]').click()
+
+# Finalizando a compra
+driver.find_element(By.XPATH, '//a[@href="./checkout-complete.html"]').click()
+
+# Verificando se a compra foi feita
+assert driver.find_element(
+    By.XPATH, '//h2[@class="complete-header" and text()="THANK YOU FOR YOUR ORDER"]'
+).is_displayed()
